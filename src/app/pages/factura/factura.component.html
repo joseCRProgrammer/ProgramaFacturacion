@@ -1,0 +1,75 @@
+<div class="row">
+    <div class = "col-md-12">
+        <h2>Gestor de facturas</h2>
+    
+    </div>
+        <form  [formGroup]="form" (submit)="saveFactura()">
+        <div class = "row">
+            <mat-form-field appearance="outline" class = "col-md-6">
+                <mat-label>Seleccione el cliente</mat-label>
+                <mat-select formControlName="cliente">
+                  <mat-option *ngFor="let cliente of clientes" [value] = "cliente">
+                    {{cliente.documento}} - {{cliente.nombre}}
+                  </mat-option>
+                
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class = "row">
+          <mat-form-field appearance="outline" class = "col-md-6">
+            <mat-label>Seleccione el producto</mat-label>
+            <mat-select (selectionChange) = "selectProducto($event)">
+              <mat-option *ngFor="let producto of productos" [value] = "producto.descripcion">
+                {{producto.descripcion}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="section" *ngIf="productoSeleccionado.length > 0">
+            <div class = "row" >
+                <div class = "col-md-2">Descripción</div>
+                <div class = "col-md-2">Valor Unitario</div>
+                <div class = "col-md-2">Cantidad</div>
+                <div class = "col-md-2">Valor Total</div>
+                <div class = "col-md-2">Opción</div>
+            </div>
+            <div class = "row pt-3" *ngFor = "let data of productoSeleccionado; let i = index" >
+                <div class = "col-md-2">{{data.descripcion}}</div>
+                <div class = "col-md-2">{{formatMoney(data.valor)}}</div>
+                <div class = "col-md-2"> 
+                <mat-form-field appearance="outline" class="col-md-12">
+                    <mat-label>Cantidad</mat-label>
+                    <input type = "number" (input)="changeCantidad(i,$event)" matInput>
+                  </mat-form-field>
+                </div>
+                <div class = "col-md-2">{{formatMoney(data.total)}}</div>
+                <div class = "col-md-2"><i (click) = "deleteProductoSeleccionado(i)" class="mdi mdi-delete cursor-pointer"></i></div>
+            </div>
+        </div>
+
+        <div class = "row pt-3" *ngIf="productoSeleccionado.length > 0">
+            <div class = "col-md-2">
+                <h4>Subtotal: {{formatMoney(subTotal())}}</h4>
+            </div>
+            <div class = "col-md-2">
+                <h4>Descuentos: {{formatMoney(descuentos())}} Aplicado: <h4 *ngIf="aplicado10()">10%</h4> <h4 *ngIf="aplicado15()">15%</h4> </h4>
+            </div>
+            <div class = "col-md-2">
+                <h4>Subtotal - Descuentos: {{formatMoney(subtotalDescuentos())}}</h4>
+            </div>
+            <div class = "col-md-2">
+                <h4>Iva: {{formatMoney(iva())}}</h4>
+            </div>
+            <div class = "col-md-2">
+                <h4>Total: {{formatMoney(total())}}</h4>
+            </div>
+            <div class = "col-md-2">
+                <div class = "col-md-12 d-flex justify-content-end">
+                    <button  mat-button>Generar Compra</button>
+                  </div>
+            </div>
+        </div>
+        
+    </form>
+</div>

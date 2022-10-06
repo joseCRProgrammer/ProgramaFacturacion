@@ -1,0 +1,60 @@
+<div class="row">
+  <div class = "col-md-12">
+    <h2>Gestor de productos</h2>
+  </div>
+    <form  [formGroup]="form" (submit)="saveCliente()">
+      <div class = "row justify-content-center">
+       
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Descripcion</mat-label>
+          <input matInput formControlName="descripcion">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Valor</mat-label>
+          <input matInput formControlName="valor">
+        </mat-form-field>
+        
+  
+  
+        <div class = "col-md-12 d-flex justify-content-end">
+          <button  mat-button>Guardar</button>
+  
+        </div>
+      </div>
+  
+    </form>
+  
+    <div class="example-table-container">
+  
+      <table mat-table [dataSource]="data" class="example-table"
+             matSort matSortActive="tipo" matSortDisableClear matSortDirection="desc">
+        <!-- Number Column -->
+        <ng-container matColumnDef="descripcion">
+          <th class = "px-5" mat-header-cell *matHeaderCellDef>Descripcion</th>
+          <td class = "px-5" mat-cell *matCellDef="let row">{{row.descripcion}}</td>
+        </ng-container>
+  
+        <!-- Title Column -->
+        <ng-container matColumnDef="valor">
+          <th mat-header-cell class = "px-5" *matHeaderCellDef>Valor</th>
+          <td class = "px-5" mat-cell *matCellDef="let row">{{formatMoney(row.valor)}}</td>
+        </ng-container>
+  
+  
+  
+        <ng-container matColumnDef="eliminar">
+          <th mat-header-cell class = "px-5" *matHeaderCellDef>Opciones</th>
+          <td class = "px-5" mat-cell *matCellDef="let row">  <i (click) = "eliminar(row.descripcion)" class="mdi mdi-delete cursor-pointer"></i></td>
+        </ng-container>
+  
+        <!-- Created Column -->
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  
+    <mat-paginator [length]="originaldata.length" [pageSize]="10" aria-label="Select page"></mat-paginator>
+  
+  </div>
+  
