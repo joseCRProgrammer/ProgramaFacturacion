@@ -111,12 +111,13 @@ export class FacturaComponent implements OnInit {
         total = total + item.total
       }
     })
+    let descuento = 0
     if(total >= 60000 && total < 100000)
-      total = total*0.1
+      descuento = total*0.1
     else if(total >= 100000)
-      total = total*0.15
-    console.log(total)
-    return total;
+      descuento = total*0.15
+    console.log(descuento)
+    return descuento;
   }
 
   aplicado10():any {
@@ -174,7 +175,7 @@ export class FacturaComponent implements OnInit {
           productoSeleccionado:this.productoSeleccionado,
           cliente:this.form.value.cliente,
           year: new Date().getFullYear(),
-          month: new Date().getMonth(),
+          month: new Date().getMonth()+1,
         }
         let facturas = [];
        

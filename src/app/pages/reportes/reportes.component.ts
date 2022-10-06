@@ -18,7 +18,7 @@ export class ReportesComponent implements OnInit {
   public totalFacturas:number = 0;
   public totalVentas:number = 0;
   public totalIva:number = 0;
-  public factuas10: number = 0;
+  public facturas10: number = 0;
   public totalFacturas10:number = 0;
   public facturas15: number = 0;
   public totalFacturas15:number = 0;
@@ -36,6 +36,33 @@ export class ReportesComponent implements OnInit {
   buscar(){
     let mes = this.form.value.month.split("-");
     console.log(mes)
+    let filter = this.facturasGuardadas.filter((e:any) => e.month == mes[1] && e.year == mes[0])
+    console.log(filter);
+    
+    this.totalFacturas = 0;
+    this.totalVentas = 0;
+    this.totalIva = 0;
+    this.totalFacturas10 = 0
+    this.facturas10 = 0;
+    this.totalFacturas15 = 0;
+    this.facturas15 = 0;
+
+    this.totalFacturas = filter.length
+  
+
+    filter.map((item:any)=>{
+      this.totalVentas = item.total + this.totalVentas
+      this.totalIva = item.iva + this.totalIva
+      if(item.aplicado10){
+        this.facturas10 = this.facturas10+1
+        this.totalFacturas10 = item.descuentos + this.totalFacturas10
+      }
+      if(item.aplicado15){
+        this.facturas15 = this.facturas15+1
+        this.totalFacturas15 = item.descuentos + this.totalFacturas15
+      }
+
+    })
 
   }
 
