@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Cliente } from 'src/app/models/cliente';
 import Swal from 'sweetalert2'; 
+import { HomeService } from './home.service';
  
 
 @Component({
@@ -21,23 +22,34 @@ export class HomeComponent implements OnInit {
   displayedColumns: string[] = ['tipo', 'documento', 'nombre', 'eliminar'];
 
 
-  constructor() { }
+  constructor(private homeService:HomeService) { }
 
   ngOnInit(): void {
-    let data = localStorage.getItem('clientes');
-    console.log(data)
+  
+    this.getAllClientes()
+    // let data = localStorage.getItem('clientes');
+    // console.log(data)
     
-    if(data != null){
-      this.originaldata = JSON.parse(data);
-      this.data = new MatTableDataSource<Cliente>(this.originaldata);
+    // if(data != null){
+    //   this.originaldata = JSON.parse(data);
+    //   this.data = new MatTableDataSource<Cliente>(this.originaldata);
 
-    }
+    // }
     this.form = new FormGroup({
       tipo: new FormControl('', [Validators.required]),
       documento: new FormControl('', [Validators.required, Validators.pattern(/^[1-9]\d{6,10}$/), Validators.minLength(5), Validators.maxLength(12)]),
       nombre: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]),
       
     });
+  }
+
+  getAllClientes(){
+    this.homeService.getAllClientes().subscribe(res=>{
+      console.log("esta es la respuesta del servidor");
+      console.log(res)
+      this.data = new MatTableDataSource<Cliente>(res);
+      this.originaldata = res
+    })
   }
 
   saveCliente(){
@@ -51,14 +63,19 @@ export class HomeComponent implements OnInit {
         })
         return;
       }
-      this.originaldata.push(this.form.value);
-      localStorage.setItem('clientes', JSON.stringify(this.originaldata));
-      this.data = new MatTableDataSource<Cliente>(this.originaldata);
-      Swal.fire({
-        icon: 'success',
-        title: 'Acción realizada',
-        text: 'Fue guardado correctamente',
+      // this.originaldata.push(this.form.value);
+      // localStorage.setItem('clientes', JSON.stringify(this.originaldata));
+      // this.data = new MatTableDataSource<Cliente>(this.originaldata);
+      this.homeService.saveCliente(this.form.value).subscribe((res:any)=>{
+        Swal.fire({
+          icon: 'success',
+          title: 'Acción realizada',
+          text: 'Fue guardado correctamente',
+        })
+        this.getAllClientes();
       })
+
+     
     }
     else{
       Swal.fire({
@@ -70,17 +87,20 @@ export class HomeComponent implements OnInit {
   }
 
   eliminar(value:any){
-    let index =  this.originaldata.findIndex((e:any)=>e.documento == value);
-    this.originaldata.splice(index, 1);
-    this.data = new MatTableDataSource<Cliente>(this.originaldata);
-    localStorage.setItem('clientes', JSON.stringify(this.originaldata));
 
-
+    let body = {id:value}
+    this.homeService.deleteCliente(body).subscribe((res:any)=>{
+      
     Swal.fire({
       icon: 'success',
       title: 'Acción realizada',
       text: 'Fue eliminado correctamente',
     })
+    this.getAllClientes();
+
+    })
+
+
   }
 
   

@@ -6,7 +6,7 @@ import { PagesRoutingModule } from './pages/pages.routing';
 
 const routes: Routes = [
 
-  { path: '', redirectTo: '/home', pathMatch: 'full'},
+  { path: '', redirectTo: '/login', pathMatch: 'full'},
 ];
 
 

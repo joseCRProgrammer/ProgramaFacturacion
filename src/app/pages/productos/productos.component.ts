@@ -4,6 +4,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Producto } from 'src/app/models/producto';
 
 import Swal from 'sweetalert2'; 
+import { ProductosService } from './productos.service';
 
 
 @Component({
@@ -22,22 +23,35 @@ export class ProductosComponent implements OnInit {
   displayedColumns: string[] = ['descripcion', 'valor', 'eliminar'];
 
 
-  constructor() { }
+  constructor(
+    private productosService: ProductosService
+  ) { }
 
   ngOnInit(): void {
-    let data = localStorage.getItem('productos');
-    console.log(data)
+    this.getAllProductos()
+    // let data = localStorage.getItem('productos');
+    // console.log(data)
     
-    if(data != null){
-      this.originaldata = JSON.parse(data);
-      this.data = new MatTableDataSource<Producto>(this.originaldata);
+    // if(data != null){
+    //   this.originaldata = JSON.parse(data);
+    //   this.data = new MatTableDataSource<Producto>(this.originaldata);
 
-    }
+    // }
     this.form = new FormGroup({
       valor: new FormControl('', [Validators.required, Validators.pattern(/^[1-9]\d{1,10}$/), Validators.minLength(1)]),
       descripcion: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]),
       
     });
+  }
+
+
+  getAllProductos(){
+    this.productosService.getAllProductos().subscribe(res=>{
+      console.log("esta es la respuesta del servidor");
+      console.log(res)
+      this.data = new MatTableDataSource<Producto>(res);
+      this.originaldata = res
+    })
   }
 
   saveCliente(){
@@ -51,14 +65,18 @@ export class ProductosComponent implements OnInit {
         })
         return;
       }
-      this.originaldata.push(this.form.value);
-      localStorage.setItem('productos', JSON.stringify(this.originaldata));
-      this.data = new MatTableDataSource<Producto>(this.originaldata);
-      Swal.fire({
-        icon: 'success',
-        title: 'Acción realizada',
-        text: 'Fue guardado correctamente',
+      // this.originaldata.push(this.form.value);
+      // localStorage.setItem('productos', JSON.stringify(this.originaldata));
+      // this.data = new MatTableDataSource<Producto>(this.originaldata);
+      this.productosService.saveProductos(this.form.value).subscribe((res:any)=>{
+        Swal.fire({
+          icon: 'success',
+          title: 'Acción realizada',
+          text: 'Fue guardado correctamente',
+        })
+        this.getAllProductos();
       })
+      
     }
     else{
       Swal.fire({
@@ -80,16 +98,22 @@ export class ProductosComponent implements OnInit {
     }
 
   eliminar(value:any){
-    let index =  this.originaldata.findIndex((e:any)=>e.descripcion == value);
-    this.originaldata.splice(index, 1);
-    this.data = new MatTableDataSource<Producto>(this.originaldata);
-    localStorage.setItem('productos', JSON.stringify(this.originaldata));
+    // let index =  this.originaldata.findIndex((e:any)=>e.descripcion == value);
+    // this.originaldata.splice(index, 1);
+    // this.data = new MatTableDataSource<Producto>(this.originaldata);
+    // localStorage.setItem('productos', JSON.stringify(this.originaldata));
 
-
+    let body = {id:value}
+    this.productosService.deleteProductos(body).subscribe((res:any)=>{
+      
     Swal.fire({
       icon: 'success',
       title: 'Acción realizada',
       text: 'Fue eliminado correctamente',
     })
+    this.getAllProductos();
+
+    })
+
   }
 }

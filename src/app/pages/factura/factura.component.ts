@@ -4,6 +4,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Cliente } from 'src/app/models/cliente';
 import { Producto } from 'src/app/models/producto';
 import Swal from 'sweetalert2'; 
+import { HomeService } from '../home/home.service';
+import { ProductosService } from '../productos/productos.service';
 
 @Component({
   selector: 'app-factura',
@@ -12,7 +14,8 @@ import Swal from 'sweetalert2';
 })
 export class FacturaComponent implements OnInit {
 
-  constructor() { }
+  constructor(private homeService: HomeService,
+    private productosService: ProductosService) { }
 
   public form: FormGroup = new FormGroup({});
   public clientes:Cliente[] = [];
@@ -28,12 +31,19 @@ export class FacturaComponent implements OnInit {
       cliente: new FormControl('', [Validators.required]),
     });
 
-    let clientes = localStorage.getItem('clientes');
-    let productos = localStorage.getItem('productos');
-    if(clientes != null)
-      this.clientes = JSON.parse(clientes);
-    if(productos != null)
-      this.productos = JSON.parse(productos);
+    this.homeService.getAllClientes().subscribe(res=>{
+      this.clientes = res
+    })
+    this.productosService.getAllProductos().subscribe(res=>{
+      this.productos = res
+    });
+    // let clientes = localStorage.getItem('clientes');
+    // let productos = localStorage.getItem('productos');
+    // if(clientes != null)
+    //   this.clientes = JSON.parse(clientes);
+    // if(productos != null)
+    //   this.productos = JSON.parse(productos);
+    
 
 
   }

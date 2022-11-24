@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'
 
 
+
 //Modulos
 import { SharedModule } from '../shared/shared.module';
 import {MatInputModule} from '@angular/material/input';
@@ -21,6 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import { ReportesComponent } from './reportes/reportes.component';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import { LoginComponent } from './login/login.component';
 
 
 
@@ -31,12 +33,15 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     PagesComponent,
     ProductosComponent,
     FacturaComponent,
-    ReportesComponent
+    ReportesComponent,
+    LoginComponent
   ],
 
   exports: [
     HomeComponent,
-    PagesComponent
+    PagesComponent,
+    FormsModule,
+    ReactiveFormsModule,
   ],
 
   imports: [
