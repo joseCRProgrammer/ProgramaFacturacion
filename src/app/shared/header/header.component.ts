@@ -17,9 +17,7 @@ export class HeaderComponent implements OnInit {
 
   logOut(){
     localStorage.removeItem('token');
-    this.router.navigateByUrl('/login')
-    console.log('algo');
-    
+    this.router.navigateByUrl('/login')    
   }
 
 }

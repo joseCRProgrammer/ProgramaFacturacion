@@ -27,14 +27,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
   
     this.getAllClientes()
-    // let data = localStorage.getItem('clientes');
-    // console.log(data)
-    
-    // if(data != null){
-    //   this.originaldata = JSON.parse(data);
-    //   this.data = new MatTableDataSource<Cliente>(this.originaldata);
-
-    // }
+   
     this.form = new FormGroup({
       tipo: new FormControl('', [Validators.required]),
       documento: new FormControl('', [Validators.required, Validators.pattern(/^[1-9]\d{6,10}$/), Validators.minLength(5), Validators.maxLength(12)]),
@@ -45,8 +38,6 @@ export class HomeComponent implements OnInit {
 
   getAllClientes(){
     this.homeService.getAllClientes().subscribe(res=>{
-      console.log("esta es la respuesta del servidor");
-      console.log(res)
       this.data = new MatTableDataSource<Cliente>(res);
       this.originaldata = res
     })
@@ -63,9 +54,6 @@ export class HomeComponent implements OnInit {
         })
         return;
       }
-      // this.originaldata.push(this.form.value);
-      // localStorage.setItem('clientes', JSON.stringify(this.originaldata));
-      // this.data = new MatTableDataSource<Cliente>(this.originaldata);
       this.homeService.saveCliente(this.form.value).subscribe((res:any)=>{
         Swal.fire({
           icon: 'success',

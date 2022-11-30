@@ -6,6 +6,7 @@ import { Producto } from 'src/app/models/producto';
 import Swal from 'sweetalert2'; 
 import { HomeService } from '../home/home.service';
 import { ProductosService } from '../productos/productos.service';
+import { FacturaService } from './factura.service';
 
 @Component({
   selector: 'app-factura',
@@ -15,7 +16,8 @@ import { ProductosService } from '../productos/productos.service';
 export class FacturaComponent implements OnInit {
 
   constructor(private homeService: HomeService,
-    private productosService: ProductosService) { }
+    private productosService: ProductosService,
+    private facturaService: FacturaService) { }
 
   public form: FormGroup = new FormGroup({});
   public clientes:Cliente[] = [];
@@ -37,20 +39,12 @@ export class FacturaComponent implements OnInit {
     this.productosService.getAllProductos().subscribe(res=>{
       this.productos = res
     });
-    // let clientes = localStorage.getItem('clientes');
-    // let productos = localStorage.getItem('productos');
-    // if(clientes != null)
-    //   this.clientes = JSON.parse(clientes);
-    // if(productos != null)
-    //   this.productos = JSON.parse(productos);
-    
-
+  
 
   }
   selectProducto(event:any){
 
     let filter:any = this.productos.filter((e:any) => e.descripcion == event.value)
-    console.log(filter);
     let data = filter[0];
   
     let validate = this.productoSeleccionado.filter((e:any) => e.descripcion == event.value);
@@ -64,13 +58,10 @@ export class FacturaComponent implements OnInit {
     }
     
     this.productoSeleccionado.push(data)
-    console.log(this.productoSeleccionado);
   }
 
   changeCantidad(index:number,event:any){
-    console.log("este es el index:", index)
     let data = this.productoSeleccionado
-    console.log(event.target.value);
     if(event.target.value > 0){
       data[index].cantidad = event.target.value 
       data[index].total = event.target.value * this.productoSeleccionado[index].valor 
@@ -81,8 +72,7 @@ export class FacturaComponent implements OnInit {
       data[index].cantidad = 0
 
     }
-    console.log(data[index])
-    console.log(data);
+   
     
   }
 
@@ -126,7 +116,6 @@ export class FacturaComponent implements OnInit {
       descuento = total*0.1
     else if(total >= 100000)
       descuento = total*0.15
-    console.log(descuento)
     return descuento;
   }
 
@@ -169,39 +158,35 @@ export class FacturaComponent implements OnInit {
   saveFactura(){
     if(this.form.valid){
       let validate = this.productoSeleccionado.filter((e:any) => e.total > 0)
-      console.log(validate);
-      console.log(this.productoSeleccionado.length);
 
       if(validate.length == this.productoSeleccionado.length){
-        console.log("entro")
         let data = {
           total:this.total(),
-          subtotalDescuentos:this.subtotalDescuentos(),
-          subTotal:this.subTotal(),
+          subtotaldescuento:this.subtotalDescuentos(),
+          subtotal:this.subTotal(),
           descuentos:this.descuentos(),
           aplicado10:this.aplicado10(),
           aplicado15:this.aplicado15(),
           iva:this.iva(),
-          productoSeleccionado:this.productoSeleccionado,
+          productoseleccionado:this.productoSeleccionado,
           cliente:this.form.value.cliente,
           year: new Date().getFullYear(),
           month: new Date().getMonth()+1,
         }
         let facturas = [];
-       
-        if(this.facturasGuardadas != null) {
-          facturas = JSON.parse(this.facturasGuardadas);
-        }
 
-        facturas.push(data);
-        localStorage.setItem('facturasGuardadas', JSON.stringify(facturas));
-        Swal.fire({
-          icon: 'success',
-          title: 'Acción realizada',
-          text: 'Fue guardado correctamente',
+        this.facturaService.saveFactura(data).subscribe((res:any)=>{
+          Swal.fire({
+            icon: 'success',
+            title: 'Acción realizada',
+            text: 'Fue guardado correctamente',
+          })
+          this.productoSeleccionado = []
+          this.form.reset();
         })
-        this.productoSeleccionado = []
-        this.form.reset();
+      
+       
+     
 
       }
       else{

@@ -29,14 +29,6 @@ export class ProductosComponent implements OnInit {
 
   ngOnInit(): void {
     this.getAllProductos()
-    // let data = localStorage.getItem('productos');
-    // console.log(data)
-    
-    // if(data != null){
-    //   this.originaldata = JSON.parse(data);
-    //   this.data = new MatTableDataSource<Producto>(this.originaldata);
-
-    // }
     this.form = new FormGroup({
       valor: new FormControl('', [Validators.required, Validators.pattern(/^[1-9]\d{1,10}$/), Validators.minLength(1)]),
       descripcion: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(500)]),
@@ -47,8 +39,6 @@ export class ProductosComponent implements OnInit {
 
   getAllProductos(){
     this.productosService.getAllProductos().subscribe(res=>{
-      console.log("esta es la respuesta del servidor");
-      console.log(res)
       this.data = new MatTableDataSource<Producto>(res);
       this.originaldata = res
     })
